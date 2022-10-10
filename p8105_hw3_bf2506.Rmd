@@ -13,7 +13,7 @@ accel_data =
   janitor::clean_names() %>% 
   mutate(weekday_vs_weekend = ifelse(day == c("Saturday", "Sunday"), "weekend", "weekday")) %>% 
   select(week, day_id, day, weekday_vs_weekend, everything())
-  
+   
 accel_data
 
 
