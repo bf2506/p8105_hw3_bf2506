@@ -16,8 +16,6 @@ accel_data =
   mutate(weekday_vs_weekend = ifelse(day == c("Saturday", "Sunday"), "weekend", "weekday")) %>% 
   select(week, day_id, day, weekday_vs_weekend, everything())
 
-accel_data
-           
 ```
 **Describe the accel_data**
 There are `r nrow` observations and `r ncol` variables. <br>
@@ -36,9 +34,13 @@ total_activity_table =
   select(accel_data, week, day_id, day, weekday_vs_weekend, total_activity) %>% 
   mutate(day = fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))) %>% 
   arrange(week, day)
-#wider
+
+df= 
+  select(total_activity_table, total_activity)
+df
 ```
-**trend???**
+**Trend**
+The man is more active from week 1 to week 3, and is less active from week 4 to week 5. On average, he is more active on Friday. Considering the two outliers data we found on Saturday in week 4 and week 5, there may be some mistakes. But there is no obvious monotonically increasing or decreasing trend.
 
 ##### Make a single-panel plot
 
@@ -53,9 +55,10 @@ plot_df =
 hour_activity_plot = 
     ggplot(plot_df, aes(x = activity_No, y = activity_counts, color = day)) + 
   geom_point() + 
-  theme(legend.position = "bottom") + 
-  labs(title = " Accelerometer Activity Counts by Day", x = "Time", y = "Activity_Counts")
+  theme(legend.position = "bottom", axis.text.x = element_blank()) + 
+  labs(title = " Accelerometer Activity Counts by Day", x = "Time", y = "Activity_Counts") 
 
 hour_activity_plot
 ```
-
+**Describe the graph**
+We can conclude that the man is usually active on the Friday morning and on the Sunday evening, less active on Wednesday. 
