@@ -7,15 +7,32 @@ date: "2022-10-10"
 library(tidyverse)
 ```
 
+### Problem 2
+##### Load, tidy, and wrangle accel_data
 ```{r read, message=FALSE, warning=FALSE}
 accel_data = 
   read.csv("./data/accel_data.csv") %>% 
   janitor::clean_names() %>% 
   mutate(weekday_vs_weekend = ifelse(day == c("Saturday", "Sunday"), "weekend", "weekday")) %>% 
   select(week, day_id, day, weekday_vs_weekend, everything())
-   
+
 accel_data
+           
+```
+**Describe the accel_data**
+There are `r nrow` observations and `r ncol` variables. <br>
+Variables: "week", "day_id", "day", "weekday_vs_weekend", "activity_*"(from "activity_1" to "activity_1440") <br>
 
+##### Traditional analyses of accel_data
 
+```{r create a total activity variable for each day}
+accel_data = 
+  mutate(accel_data, total_activity = rowSums(accel_data[5:1444])) %>% 
+  select(week, day_id, day, weekday_vs_weekend, total_activity, everything())
+```
+
+```{r create new total table }
+total_activity_table =
+  select(accel_data, week, day_id, day, weekday_vs_weekend, total_activity)
 ```
 
