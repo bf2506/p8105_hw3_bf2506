@@ -36,8 +36,26 @@ total_activity_table =
   select(accel_data, week, day_id, day, weekday_vs_weekend, total_activity) %>% 
   mutate(day = fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))) %>% 
   arrange(week, day)
+#wider
 ```
 **trend???**
 
 ##### Make a single-panel plot
+
+```{r single-panel plot}
+plot_df = 
+   pivot_longer(
+    accel_data,
+    activity_1:activity_1440, 
+    names_to = "activity_No", 
+    values_to = "activity_counts")
+
+hour_activity_plot = 
+    ggplot(plot_df, aes(x = activity_No, y = activity_counts, color = day)) + 
+  geom_point() + 
+  theme(legend.position = "bottom") + 
+  labs(title = " Accelerometer Activity Counts by Day", x = "Time", y = "Activity_Counts")
+
+hour_activity_plot
+```
 
