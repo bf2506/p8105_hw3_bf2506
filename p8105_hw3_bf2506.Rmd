@@ -33,6 +33,11 @@ accel_data =
 
 ```{r create new total table }
 total_activity_table =
-  select(accel_data, week, day_id, day, weekday_vs_weekend, total_activity)
+  select(accel_data, week, day_id, day, weekday_vs_weekend, total_activity) %>% 
+  mutate(day = fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))) %>% 
+  arrange(week, day)
 ```
+**trend???**
+
+##### Make a single-panel plot
 
