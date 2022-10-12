@@ -62,3 +62,21 @@ hour_activity_plot
 ```
 **Describe the graph**
 We can conclude that the man is usually active on the Friday morning and on the Sunday evening, less active on Wednesday. 
+
+### Problem 3
+
+```{r load dataset of noaa}
+library(p8105.datasets)
+data("ny_noaa")
+```
+**Describe ny_noaa ** < br >
+This dataset contains 2595176 observations and 7 variables related to some weather data in New York, which are provided by NOAA. ??many stations report precipitation only.??indicating the extent to which missing data is an issue.??
+The Variables are as following: <br>
+      id: Weather station ID <br>
+      date: Date of observation <br>
+      prcp: Precipitation (tenths of mm) <br>
+      snow: Snowfall (mm) <br>
+      snwd: Snow depth (mm) <br>
+      tmax: Maximum temperature (tenths of degrees C) <br>
+      tmin: Minimum temperature (tenths of degrees C) <br>
+
