@@ -81,10 +81,17 @@ The Variables are as following: <br>
       tmin: Minimum temperature (tenths of degrees C) <br>
 
 ```{r clean data}
-ny_noaa =  
+ny_noaa_df =  
   ny_noaa %>% 
   janitor::clean_names() %>% 
   separate(date, into = c("year", "month", "day"), convert = TRUE) %>% 
-  
+  mutate(tmax = as.double(tmax)/10, tmin = as.double(tmin)/10)
 ```
 
+```{r snowfall mode}
+ny_noaa_snowfall = 
+  ny_noaa_df %>% 
+  drop_na(snow)
+
+```
+For snowfall, `r names(table(ny_noaa_snowfall$snow))[which.max(table(ny_noaa_snowfall$snow))]` is the most commonly observed values. I think it is because, generally, snow only happens in the winter, with a 25% percentage in a year, and some places may not get snow.
