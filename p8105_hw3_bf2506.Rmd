@@ -85,7 +85,7 @@ ny_noaa_df =
   ny_noaa %>% 
   janitor::clean_names() %>% 
   separate(date, into = c("year", "month", "day"), convert = TRUE) %>% 
-  mutate(tmax = as.double(tmax)/10, tmin = as.double(tmin)/10)
+  mutate(tmax = as.numeric(tmax)/10, tmin = as.double(tmin)/10)
 ```
 
 ```{r snowfall mode}
@@ -95,3 +95,24 @@ ny_noaa_snowfall =
 
 ```
 For snowfall, `r names(table(ny_noaa_snowfall$snow))[which.max(table(ny_noaa_snowfall$snow))]` is the most commonly observed values. I think it is because, generally, snow only happens in the winter, with a 25% percentage in a year, and some places may not get snow.
+
+```{r  two-panel plot Average tmax in January / July}
+Avetmax_in_Jan_and_Jul = 
+  ny_noaa_df %>% 
+  select(id, year, month, tmax) %>% 
+  filter(month == c(1,7)) %>% 
+  drop_na(tmax) %>%
+  group_by(id, month, year) %>%
+  summarize(
+    avetmax = round(mean(tmax), digits = 2))
+
+Avetmax_plot = 
+ggplot(Avetmax_in_Jan_and_Jul, aes(x = year, y = avetmax, color = id, group = id)) + 
+  geom_point(alpha = .6) +
+  geom_line(alpha = .4) + 
+  facet_grid(. ~ month) +
+  theme(legend.position = "none")
+
+Avetmax_plot
+```
+
