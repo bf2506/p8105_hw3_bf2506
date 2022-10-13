@@ -80,3 +80,11 @@ The Variables are as following: <br>
       tmax: Maximum temperature (tenths of degrees C) <br>
       tmin: Minimum temperature (tenths of degrees C) <br>
 
+```{r clean data}
+ny_noaa =  
+  ny_noaa %>% 
+  janitor::clean_names() %>% 
+  separate(date, into = c("year", "month", "day"), convert = TRUE) %>% 
+  
+```
+
