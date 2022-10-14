@@ -18,7 +18,7 @@ accel_data =
 
 ```
 **Describe the accel_data**
-There are `r nrow` observations and `r ncol` variables. <br>
+There are 2595176 observations and 7 variables. <br>
 Variables: "week", "day_id", "day", "weekday_vs_weekend", "activity_*"(from "activity_1" to "activity_1440") <br>
 
 ##### Traditional analyses of accel_data
@@ -35,9 +35,8 @@ total_activity_table =
   mutate(day = fct_relevel(day, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))) %>% 
   arrange(week, day)
 
-df= 
+df = 
   select(total_activity_table, total_activity)
-df
 ```
 **Trend**
 The man is more active from week 1 to week 3, and is less active from week 4 to week 5. On average, he is more active on Friday. Considering the two outliers data we found on Saturday in week 4 and week 5, there may be some mistakes. But there is no obvious monotonically increasing or decreasing trend.
@@ -65,12 +64,21 @@ We can conclude that the man is usually active on the Friday morning and on the 
 
 ### Problem 3
 
-```{r load dataset of noaa}
+```{r load dataset of noaa and package}
 library(p8105.datasets)
 data("ny_noaa")
+
+library(patchwork)
 ```
+
 **Describe ny_noaa ** < br >
-This dataset contains 2595176 observations and 7 variables related to some weather data in New York, which are provided by NOAA. ??many stations report precipitation only.??indicating the extent to which missing data is an issue.??
+This dataset contains 2595176 observations and 7 variables related to some weather data in New York, which are provided by NOAA. 
+NA in prcp is `r sum(is.na(ny_noaa$prcp))`, <br>
+NA in snow is `r sum(is.na(ny_noaa$snow))`, <br>
+NA in snwd is `r sum(is.na(ny_noaa$snwd))`, <br>
+NA in tmax is `r sum(is.na(ny_noaa$tmax))`, <br>
+NA in tmin is `r sum(is.na(ny_noaa$tmin))`, <br>
+??many stations report precipitation only.??indicating the extent to which missing data is an issue.??
 The Variables are as following: <br>
       id: Weather station ID <br>
       date: Date of observation <br>
@@ -79,7 +87,8 @@ The Variables are as following: <br>
       snwd: Snow depth (mm) <br>
       tmax: Maximum temperature (tenths of degrees C) <br>
       tmin: Minimum temperature (tenths of degrees C) <br>
-
+      
+##### Data cleaning
 ```{r clean data}
 ny_noaa_df =  
   ny_noaa %>% 
@@ -96,6 +105,7 @@ ny_noaa_snowfall =
 ```
 For snowfall, `r names(table(ny_noaa_snowfall$snow))[which.max(table(ny_noaa_snowfall$snow))]` is the most commonly observed values. I think it is because, generally, snow only happens in the winter, with a 25% percentage in a year, and some places may not get snow.
 
+##### Two-panel plot Average tmax in January and July
 ```{r  two-panel plot Average tmax in January / July}
 Avetmax_in_Jan_and_Jul = 
   ny_noaa_df %>% 
@@ -114,5 +124,36 @@ ggplot(Avetmax_in_Jan_and_Jul, aes(x = year, y = avetmax, color = id, group = id
   theme(legend.position = "none")
 
 Avetmax_plot
+```
+**Is there any observable / interpretable structure? Any outliers?**
+
+#####Two-panel plot  TMAX vs TMIN and snowfall 
+```{r TMAX vs TMIN plot}
+tmax_tmin_plot = 
+  ggplot(ny_noaa_df, aes(x = tmin, y = tmax)) + geom_hex() 
+
+tmax_tmin_plot
+```
+
+```{r snowfall plot}
+##to make r run faster, i get a new small table
+snowfall_plot_df = 
+  ny_noaa_df %>% 
+  select(id, year, snow) %>% 
+  drop_na(snow) %>% 
+  filter(snow > 0 & snow < 100)
+
+snowfall_plot = 
+  ggplot(snowfall_plot_df, aes(x = year, y = snow, group = year)) + 
+  geom_violin(aes(fill = year), alpha = 0.7) + 
+  stat_summary(fun = "median", color = "black") +
+  theme(legend.position = "none") +
+  scale_x_discrete(limits = c(1981, 2010))
+
+snowfall_plot
+```
+
+```{r two-panel plot tmax/tmin and snowfall}
+(tmax_tmin_plot + snowfall_plot)
 ```
 
