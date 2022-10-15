@@ -8,7 +8,7 @@ library(tidyverse)
 ```
 
 ### Problem 2
-##### Load, tidy, and wrangle accel_data
+#### Load, tidy, and wrangle accel_data
 ```{r read, message=FALSE, warning=FALSE}
 accel_data = 
   read.csv("./data/accel_data.csv") %>% 
@@ -17,11 +17,11 @@ accel_data =
   select(week, day_id, day, weekday_vs_weekend, everything())
 
 ```
-**Describe the accel_data**
-There are 2595176 observations and 7 variables. <br>
+**Describe the accel_data** <br> 
+There are `r nrow(accel_data)` observations and `r ncol(accel_data)` variables. <br>
 Variables: "week", "day_id", "day", "weekday_vs_weekend", "activity_*"(from "activity_1" to "activity_1440") <br>
 
-##### Traditional analyses of accel_data
+#### Traditional analyses of accel_data
 
 ```{r create a total activity variable for each day}
 accel_data = 
@@ -38,10 +38,10 @@ total_activity_table =
 df = 
   select(total_activity_table, total_activity)
 ```
-**Trend**
+**Trend** <br> 
 The man is more active from week 1 to week 3, and is less active from week 4 to week 5. On average, he is more active on Friday. Considering the two outliers data we found on Saturday in week 4 and week 5, there may be some mistakes. But there is no obvious monotonically increasing or decreasing trend.
 
-##### Make a single-panel plot
+#### Make a single-panel plot
 
 ```{r single-panel plot}
 plot_df = 
@@ -54,12 +54,13 @@ plot_df =
 hour_activity_plot = 
     ggplot(plot_df, aes(x = activity_No, y = activity_counts, color = day)) + 
   geom_point() + 
-  theme(legend.position = "bottom", axis.text.x = element_blank()) + 
-  labs(title = " Accelerometer Activity Counts by Day", x = "Time", y = "Activity_Counts") 
+  theme(legend.position = "bottom", , axis.text.x = element_blank()) + 
+  labs(title = " Accelerometer Activity Counts by Day", x = "Time", y = "Activity_Counts")
 
 hour_activity_plot
 ```
-**Describe the graph**
+ 
+**Describe the graph** <br> 
 We can conclude that the man is usually active on the Friday morning and on the Sunday evening, less active on Wednesday. 
 
 ### Problem 3
@@ -69,26 +70,23 @@ library(p8105.datasets)
 data("ny_noaa")
 
 library(patchwork)
+library(ggridges)
 ```
 
-**Describe ny_noaa ** < br >
-This dataset contains 2595176 observations and 7 variables related to some weather data in New York, which are provided by NOAA. 
-NA in prcp is `r sum(is.na(ny_noaa$prcp))`, <br>
-NA in snow is `r sum(is.na(ny_noaa$snow))`, <br>
-NA in snwd is `r sum(is.na(ny_noaa$snwd))`, <br>
-NA in tmax is `r sum(is.na(ny_noaa$tmax))`, <br>
-NA in tmin is `r sum(is.na(ny_noaa$tmin))`, <br>
-??many stations report precipitation only.??indicating the extent to which missing data is an issue.??
-The Variables are as following: <br>
-      id: Weather station ID <br>
-      date: Date of observation <br>
-      prcp: Precipitation (tenths of mm) <br>
-      snow: Snowfall (mm) <br>
-      snwd: Snow depth (mm) <br>
-      tmax: Maximum temperature (tenths of degrees C) <br>
-      tmin: Minimum temperature (tenths of degrees C) <br>
-      
-##### Data cleaning
+**Describe ny_noaa** <br> 
+This dataset contains `r nrow(ny_noaa)` observations and `r ncol(ny_noaa)` variables related to some weather data in New York, which are provided by NOAA. The Variables are as following: <br>
+      **id**: Weather station ID <br>
+      **date**: Date of observation <br>
+      **prcp**: Precipitation (tenths of mm) <br>
+      **snow**: Snowfall (mm) <br>
+      **snwd**: Snow depth (mm) <br>
+      **tmax**: Maximum temperature (tenths of degrees C) <br>
+      **tmin**: Minimum temperature (tenths of degrees C) <br>
+And we can find: <br>
+`r sum(is.na(ny_noaa$prcp))` NA in prcp, `r sum(is.na(ny_noaa$snow))` NA in snow, `r sum(is.na(ny_noaa$snwd))` NA in snwd, `r sum(is.na(ny_noaa$tmax))` NA in tmax, `r sum(is.na(ny_noaa$tmin))` NA in tmin. Many stations report precipitation only, and tmax and tmin have the most missing data. The missing data will make a not comprehensive enough and not accurate enough analysis. For example, lacking enough data on temperature will prevent us from analyzing the contrast or trend of maximum and minimum temperatures across New York from 1981 to 2010.
+
+#### Data cleaning
+ 
 ```{r clean data}
 ny_noaa_df =  
   ny_noaa %>% 
@@ -101,23 +99,21 @@ ny_noaa_df =
 ny_noaa_snowfall = 
   ny_noaa_df %>% 
   drop_na(snow)
-
 ```
-For snowfall, `r names(table(ny_noaa_snowfall$snow))[which.max(table(ny_noaa_snowfall$snow))]` is the most commonly observed values. I think it is because, generally, snow only happens in the winter, with a 25% percentage in a year, and some places may not get snow.
+**For snowfall**, `r names(table(ny_noaa_snowfall$snow))[which.max(table(ny_noaa_snowfall$snow))]` is the most commonly observed values. I think it is because, generally, snow only happens in the winter, with a 25% percentage in a year, and some places may not get snow.
 
-##### Two-panel plot Average tmax in January and July
-```{r  two-panel plot Average tmax in January / July}
+#### Two-panel plot Average tmax in January and July
+
+```{r two panel plot Average tmax in JanuaryJuly, message=FALSE, warning=FALSE}
 Avetmax_in_Jan_and_Jul = 
   ny_noaa_df %>% 
   select(id, year, month, tmax) %>% 
-  filter(month == c(1,7)) %>% 
-  drop_na(tmax) %>%
+  filter(month %in% c(1, 7)) %>% 
   group_by(id, month, year) %>%
-  summarize(
-    avetmax = round(mean(tmax), digits = 2))
+  summarize(avetmax = round(mean(tmax, na.rm = TRUE), digits = 2))
 
 Avetmax_plot = 
-ggplot(Avetmax_in_Jan_and_Jul, aes(x = year, y = avetmax, color = id, group = id)) + 
+  ggplot(Avetmax_in_Jan_and_Jul, aes(x = year, y = avetmax, color = id, group = id)) + 
   geom_point(alpha = .6) +
   geom_line(alpha = .4) + 
   facet_grid(. ~ month) +
@@ -125,17 +121,17 @@ ggplot(Avetmax_in_Jan_and_Jul, aes(x = year, y = avetmax, color = id, group = id
 
 Avetmax_plot
 ```
-**Is there any observable / interpretable structure? Any outliers?**
+**Observation** <br>
+The maximum temperature in January fluctuates more than in July and is also reasonably lower than in July. From 1981 to 2010, We could not see a significant upward or downward trend in the maximum temperature in both Jan and Jul in New York. And there some outliers in both Jan and Jul plot.
+  
+#### Two-panel plot  TMAX vs TMIN and snowfall 
 
-#####Two-panel plot  TMAX vs TMIN and snowfall 
-```{r TMAX vs TMIN plot}
+```{r TMAX vs TMIN plot, message=FALSE, warning=FALSE}
 tmax_tmin_plot = 
   ggplot(ny_noaa_df, aes(x = tmin, y = tmax)) + geom_hex() 
-
-tmax_tmin_plot
 ```
 
-```{r snowfall plot}
+```{r snowfall plot, message=FALSE, warning=FALSE}
 ##to make r run faster, i get a new small table
 snowfall_plot_df = 
   ny_noaa_df %>% 
@@ -144,16 +140,10 @@ snowfall_plot_df =
   filter(snow > 0 & snow < 100)
 
 snowfall_plot = 
-  ggplot(snowfall_plot_df, aes(x = year, y = snow, group = year)) + 
-  geom_violin(aes(fill = year), alpha = 0.7) + 
-  stat_summary(fun = "median", color = "black") +
-  theme(legend.position = "none") +
-  scale_x_discrete(limits = c(1981, 2010))
-
-snowfall_plot
+  ggplot(snowfall_plot_df, aes(x = snow, y = year, group = year)) + 
+  geom_density_ridges(scale = .85)
 ```
 
-```{r two-panel plot tmax/tmin and snowfall}
+```{r two-panel plot tmax/tmin and snowfall, message=FALSE, warning=FALSE}
 (tmax_tmin_plot + snowfall_plot)
 ```
-
