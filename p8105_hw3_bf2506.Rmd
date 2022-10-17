@@ -117,7 +117,8 @@ Avetmax_plot =
   geom_point(alpha = .6) +
   geom_line(alpha = .4) + 
   facet_grid(. ~ month) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") + 
+  labs(title = "Average Max Temperature In Jan and Jul In Each Station Across Years", x = "Year", y = "Average Max Temperature / ℃")
 
 Avetmax_plot
 ```
@@ -129,7 +130,9 @@ The maximum temperature in January fluctuates more than in July and is also reas
 
 ```{r TMAX vs TMIN plot, message=FALSE, warning=FALSE}
 tmax_tmin_plot = 
-  ggplot(ny_noaa_df, aes(x = tmin, y = tmax)) + geom_hex() 
+  ggplot(ny_noaa_df, aes(x = tmin, y = tmax)) + geom_hex() + 
+  labs(title = "Max Temperature VS Min Temperature", x = "Min Temperatue / ℃" , y = "Max Temperature / ℃")
+  
 ```
 
 ```{r snowfall plot, message=FALSE, warning=FALSE}
@@ -142,7 +145,8 @@ snowfall_plot_df =
 
 snowfall_plot = 
   ggplot(snowfall_plot_df, aes(x = snow, y = year, group = year)) + 
-  geom_density_ridges(scale = .85)
+  geom_density_ridges(scale = .85) + 
+  labs(title = "Distribution of Snowfall Values from 0 to 100 By Year", x = "Snowfall / mm", y = "Year")
 ```
 
 ```{r two-panel plot tmax/tmin and snowfall, message=FALSE, warning=FALSE}
